@@ -44,6 +44,6 @@ for line in file.readlines():
             },
             "time": time + ".000Z"
         }
-        print(time)
-        # write_api.write(bucket=bucket, org=org, record=p1)
+        response = write_api.write(bucket=bucket, org=org, record=p1)
+        print(response, f", record added for {p1['tags']['name']} at time {p1['time']}.",)
 
