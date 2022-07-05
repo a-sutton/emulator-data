@@ -1,20 +1,22 @@
 import datetime
-import json
+import os.path
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
+from py_dotenv import read_dotenv
 
-bucket = "test"
-org = "FTS"
-token = "ZztbZsHLRFNu3lMuop3qAJIRq-QUTlzzMLgHZANKX3vfv836X8St2pwQFtSLiVGdPVHHnmNhhEe_T4FdmRVBhw=="
-url = "http://10.253.35.154:8087"
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+read_dotenv(dotenv_path)
+bucket = os.getenv('INFLUXDB_BUCKET')
+org = os.getenv('INFLUXDB_ORG')
+token = os.getenv('INFLUXDB_TOKEN')
+url = os.getenv('INFLUXDB_URL')
 client = influxdb_client.InfluxDBClient(
    url=url,
    token=token,
    org=org
 )
 write_api = client.write_api(write_options=SYNCHRONOUS)
-file_name = r"\\mgc\home\asutton\emulator-data\power\PMG_monitoring.log-latest.txt"
-file = open(file_name, "r")
+file = open(os.getenv("LATEST_LOG"), "r")
 data = []
 for line in file.readlines():
     if "TX" in line:
@@ -39,8 +41,8 @@ for line in file.readlines():
                 "Current C": f"{int(p3)}"
             },
             "tags": {
-                "site": "Wilsonville",
-                "name": "Demogorgon"
+                "site": os.getenv('EMULATOR_SITE'),
+                "name": os.getenv('EMULATOR_NAME')
             },
             "time": time + ".000Z"
         }
